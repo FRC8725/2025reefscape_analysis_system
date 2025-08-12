@@ -1,0 +1,204 @@
+﻿<div class="card">
+    <div class="card-header">
+        <h2>新增賽事資料</h2>
+    </div>
+
+    <form id="match_form" class="form" novalidate>
+        <div class="input-group">
+            <label for="recorder">記錄員</label>
+            <select id="recorder" name="recorder" class="select" required>
+                <option value="" disabled selected>選擇隊員</option>
+            </select>
+
+            <button id="refresh_member_btn" class="btn" type="button">刷新隊員名單</button>
+        </div>
+
+        <div class="input-group">
+            <label for="match_number">Match</label>
+            <input id="match_number" name="match_number" class="input" type="number" inputmode="numeric"
+                placeholder="輸入場次" required />
+        </div>
+
+        <div class="input-group">
+            <label for="team">隊伍</label>
+            <select id="team" name="team" class="select" required>
+                <option value="" disabled selected>選擇隊伍</option>
+            </select>
+            <button id="refresh_teams_btn" class="btn" type="button">刷新隊伍</button>
+        </div>
+
+        <div class="input-group">
+            <label for="alliance">Alliance</label>
+            <select id="alliance" name="alliance" class="select" required>
+                <option value="" disabled selected>選擇聯盟</option>
+                <option value="red">Red Alliance - 紅方</option>
+                <option value="blue">Blue Alliance - 藍方</option>
+            </select>
+        </div>
+
+        <h3 class="input-title">自動階段</h3>
+
+        <div class="input-group auto-group">
+            <div class="input-group">
+                <label for="auto_leave">LEAVE</label>
+                <select id="auto_leave" name="auto_leave" class="select" required>
+                    <option value="" disabled selected>是否離開聯盟線</option>
+                    <option value="YES">YES</option>
+                    <option value="NO">NO</option>
+                </select>
+            </div>
+
+            <div class="input-group coral-row">
+                <div class="coral-fields">
+                    <label for="auto_l4_coral">AUTO L4 CORAL</label>
+                    <div class="number-control">
+                        <button type="button" class="btn-minus" data-target="auto_l4_coral_spin">-1</button>
+                        <input id="auto_l4_coral_spin" name="auto_l4_coral" class="input" type="number" placeholder="L4"
+                            value="0" required />
+                        <button type="button" class="btn-plus" data-target="auto_l4_coral_spin">+1</button>
+                    </div>
+
+                    <label for="auto_l3_coral">AUTO L3 CORAL</label>
+                    <div class="number-control">
+                        <button type="button" class="btn-minus" data-target="auto_l3_coral_spin">-1</button>
+                        <input id="auto_l3_coral_spin" name="auto_l3_coral" class="input" type="number" placeholder="L3"
+                            value="0" required />
+                        <button type="button" class="btn-plus" data-target="auto_l3_coral_spin">+1</button>
+                    </div>
+
+                    <label for="auto_l2_coral">AUTO L2 CORAL</label>
+                    <div class="number-control">
+                        <button type="button" class="btn-minus" data-target="auto_l2_coral_spin">-1</button>
+                        <input id="auto_l2_coral_spin" name="auto_l2_coral" class="input" type="number" placeholder="L2"
+                            value="0" required />
+                        <button type="button" class="btn-plus" data-target="auto_l2_coral_spin">+1</button>
+                    </div>
+
+                    <label for="auto_l1_coral">AUTO L1 CORAL</label>
+                    <div class="number-control">
+                        <button type="button" class="btn-minus" data-target="auto_l1_coral_spin">-1</button>
+                        <input id="auto_l1_coral_spin" name="auto_l1_coral" class="input" type="number" placeholder="L1"
+                            value="0" required />
+                        <button type="button" class="btn-plus" data-target="auto_l1_coral_spin">+1</button>
+                    </div>
+                </div>
+                <img src="assets/images/reef.png" alt="Coral" class="coral-side-img">
+            </div>
+
+
+            <div class="input-group">
+                <label for="auto_net_algae">AUTO NET ALGAE</label>
+
+                <div class="number-control">
+                    <button type="button" class="btn-minus" data-target="auto_net_algae_spin">-1</button>
+                    <input id="auto_net_algae_spin" name="auto_net_algae" class="input" type="number"
+                        placeholder="NET" value="0" required />
+                    <button type="button" class="btn-plus" data-target="auto_net_algae_spin">+1</button>
+                </div>
+
+                <label for="auto_processor_algae">AUTO PROCESSOR ALGAE</label>
+                <div class="number-control">
+                    <button type="button" class="btn-minus" data-target="auto_processor_algae_spin">-1</button>
+                    <input id="auto_processor_algae_spin" name="auto_processor_algae" class="input" type="number"
+                        placeholder="PROCESSOR" value="0" required />
+                    <button type="button" class="btn-plus" data-target="auto_processor_algae_spin">+1</button>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="input-title">手動階段</h3>
+
+        <div class="input-group teleop-group">
+            <div class="input-group">
+                <label for="algae_removed">移除 ALGAE</label>
+                <div class="number-control">
+                    <button type="button" class="btn-minus" data-target="algae_removed_spin">-1</button>
+                    <input id="algae_removed_spin" name="algae_removed" class="input" type="number"
+                        placeholder="移除的 ALGAE 數量" value="0" required />
+                    <button type="button" class="btn-plus" data-target="algae_removed_spin">+1</button>
+                </div>
+            </div>
+
+            <div class="input-group coral-row">
+                <div class="coral-fields">
+                    <label for="teleop_l4_coral">TELEOP L4 CORAL</label>
+                    <div class="number-control">
+                        <button type="button" class="btn-minus" data-target="teleop_l4_coral_spin">-1</button>
+                        <input id="teleop_l4_coral_spin" name="teleop_l4_coral" class="input" type="number"
+                            placeholder="L4" value="0" required />
+                        <button type="button" class="btn-plus" data-target="teleop_l4_coral_spin">+1</button>
+                    </div>
+
+                    <label for="teleop_l3_coral">TELEOP L3 CORAL</label>
+                    <div class="number-control">
+                        <button type="button" class="btn-minus" data-target="teleop_l3_coral_spin">-1</button>
+                        <input id="teleop_l3_coral_spin" name="teleop_l3_coral" class="input" type="number"
+                            placeholder="L3" value="0" required />
+                        <button type="button" class="btn-plus" data-target="teleop_l3_coral_spin">+1</button>
+                    </div>
+
+                    <label for="teleop_l2_coral">TELEOP L2 CORAL</label>
+                    <div class="number-control">
+                        <button type="button" class="btn-minus" data-target="teleop_l2_coral_spin">-1</button>
+                        <input id="teleop_l2_coral_spin" name="teleop_l2_coral" class="input" type="number"
+                            placeholder="L2" value="0" required />
+                        <button type="button" class="btn-plus" data-target="teleop_l2_coral_spin">+1</button>
+                    </div>
+
+                    <label for="teleop_l1_coral">TELEOP L1 CORAL</label>
+                    <div class="number-control">
+                        <button type="button" class="btn-minus" data-target="teleop_l1_coral_spin">-1</button>
+                        <input id="teleop_l1_coral_spin" name="teleop_l1_coral" class="input" type="number"
+                            placeholder="L1" value="0" required />
+                        <button type="button" class="btn-plus" data-target="teleop_l1_coral_spin">+1</button>
+                    </div>
+                </div>
+                <img src="assets/images/reef.png" alt="Coral" class="coral-side-img">
+            </div>
+
+            <div class="input-group">
+                <label for="teleop_net_algae">TELEOP NET ALGAE</label>
+                <div class="number-control">
+                    <button type="button" class="btn-minus" data-target="teleop_net_algae_spin">-1</button>
+                    <input id="teleop_net_algae_spin" name="teleop_net_algae" class="input" type="number"
+                        placeholder="NET" value="0" required />
+                    <button type="button" class="btn-plus" data-target="teleop_net_algae_spin">+1</button>
+                </div>
+
+                <label for="teleop_processor_algae">TELEOP PROCESSOR ALGAE</label>
+                <div class="number-control">
+                    <button type="button" class="btn-minus" data-target="teleop_processor_algae_spin">-1</button>
+                    <input id="teleop_processor_algae_spin" name="teleop_processor_algae" class="input" type="number"
+                        placeholder="PROCESSOR" value="0" required />
+                    <button type="button" class="btn-plus" data-target="teleop_processor_algae_spin">+1</button>
+                </div>
+
+                <div class="input-group">
+                    <label for="match_endgame_status">ENDGAME STATUS</label>
+                    <select id="match_endgame_status" name="match_endgame_status" class="select" required>
+                        <option value="" disabled selected>ENDGAME STATUS</option>
+                        <option value="NONE">NONE</option>
+                        <option value="PARK">PARK</option>
+                        <option value="DEEP CAGE">DEEP CAGE</option>
+                        <option value="SHALLOW CAGE">SHALLOW CAGE</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3 class="input-title">記分板</h3>
+
+            <div class="input-group">
+                <label for="rank_points">RANK POINTS</label>
+                <input id="rank_points" name="rank_points" class="input" type="number" placeholder="輸入 Rank Points"
+                    required />
+            </div>
+
+            <div class="input-group">
+                <label for="total_points">TOTAL POINTS</label>
+                <input id="total_points" name="total_points" class="input" type="number" placeholder="輸入總分" required />
+            </div>
+
+            <div id="match_submit_status" class="submit-status" aria-live="polite"></div>
+            <button id="add_match_btn" class="btn" type="submit">新增資料</button>
+    </form>
+</div>

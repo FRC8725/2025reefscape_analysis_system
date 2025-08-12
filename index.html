@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-Hant">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<title>FRC 8725 Scouting Table</title>
+	<link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+	<header class="app-header">
+		<h1>FRC 8725 Scouting Table</h1>
+	</header>
+
+	<!-- CSS-only Tabs -->
+	<section class="tabs">
+		<input type="radio" id="tab-team" name="tabs" checked>
+		<label for="tab-team" data-src="team.html" data-script="team.js">新增隊伍</label>
+
+		<input type="radio" id="tab-match" name="tabs">
+		<label for="tab-match" data-src="match.html" data-script="match.js">賽事記錄</label>
+
+		<input type="radio" id="tab-analysis" name="tabs">
+		<label for="tab-analysis" data-src="analysis.html" data-script="analysis.js">分析表</label>
+
+		<div id="tab-content"></div>
+
+	</section>
+
+	<footer class="app-footer">
+		<small>© 2025 8725 Misty Panther</small>
+	</footer>
+
+	<script type="module">
+ 		import MainApp from './main.js';
+ 		const scriptId = 'AKfycbwHEqyJzt8M81NSV-k1d7-swRIUA1S02GyrNYtjNyIwcUCIOKyV4Bc3qfyfoSOD8qe3';
+ 		const ENDPOINT = `https://script.google.com/macros/s/${scriptId}/exec`;
+
+ 		const app = new MainApp({
+ 			endpoint: ENDPOINT,
+ 			contentBoxId: 'tab-content'
+ 		});
+
+ 		app.start();
+	</script>
+</body>
+</html>

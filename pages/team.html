@@ -1,0 +1,143 @@
+﻿<div class="card">
+    <div class="card-header">
+        <h2>新增隊伍資料</h2>
+    </div>
+
+    <form id="team_form" class="form" novalidate>
+         <div class="input-group">
+            <label for="recorder">記錄員</label>
+            <select id="recorder" name="recorder" class="select" required>
+                <option value="" disabled selected>選擇隊員</option>
+            </select>
+
+            <button id="refresh_member_btn" class="btn" type="button">刷新隊員名單</button>
+        </div>
+        
+        <div class="input-group">
+            <label for="team_number">隊伍號碼</label>
+            <input id="team_number" name="team_number" class="input" type="number" inputmode="numeric"
+                placeholder="輸入隊伍編號" required />
+        </div>
+
+        <div class="input-group">
+            <label for="chassis_type">底盤類型</label>
+            <select id="chassis_type" name="chassis_type" class="select" required>
+                <option value="" disabled selected>選擇底盤類型</option>
+                <option value="KOP">KOP</option>
+                <option value="Swerve">Swerve</option>
+                <option value="Mecanum">Mecanum</option>
+                <option value="Other">其他</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="coral_collect">CORAL 收集位置</label>
+            <div class="toggle-item">
+                <input type="checkbox" id="coral_station" name="coral_station">
+                <label for="coral_station" class="btn-toggle"><span>CORAL Station</span></label>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" id="coral_floor" name="coral_floor">
+                <label for="coral_floor" class="btn-toggle"><span>地板</span></label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="algae_collect_remove">ALGAE 收集與移除位置</label>
+            <div class="toggle-item">
+                <input type="checkbox" id="algae_remove" name="algae_remove">
+                <label for="algae_remove" class="btn-toggle"><span>能移除 ALGAE</span></label>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" id="algae_collect" name="algae_collect">
+                <label for="algae_collect" class="btn-toggle"><span>能收集 ALGAE</span></label>
+        </div>
+
+        <h3 class="input-title">自動階段</h3>
+
+        <div class="input-group">
+            <label for="coral_place">自動 CORAL 擺放位置</label>
+            <div class="toggle-item">
+                <input type="checkbox" id="auto_l4_coral" name="auto_l4_coral">
+                <label for="auto_l4_coral" class="btn-toggle"><span>L4</span></label>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" id="auto_l3_coral" name="auto_l3_coral">
+                <label for="auto_l3_coral" class="btn-toggle"><span>L3</span></label>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" id="auto_l2_coral" name="auto_l2_coral">
+                <label for="auto_l2_coral" class="btn-toggle"><span>L2</span></label>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" id="auto_l1_coral" name="auto_l1_coral">
+                <label for="auto_l1_coral" class="btn-toggle"><span>L1</span></label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="algae_place">自動 ALGAE 擺放位置</label>
+            <div class="toggle-item">
+                <input type="checkbox" id="algae_net" name="algae_net">
+                <label for="algae_net" class="btn-toggle"><span>NET</span></label>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" id="algae_processor" name="algae_processor">
+                <label for="algae_processor" class="btn-toggle"><span>PROCESSOR</span></label>
+            </div>
+        </div>
+
+        <h3 class="input-title">手動階段</h3>
+
+        <div class="input-group">
+            <label for="manual_coral">手動 CORAL 擺放位置</label>
+            <div class="toggle-item">
+                <input type="checkbox" id="teleop_l4_coral" name="teleop_l4_coral">
+                <label for="teleop_l4_coral" class="btn-toggle"><span>L4</span></label>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" id="teleop_l3_coral" name="teleop_l3_coral">
+                <label for="teleop_l3_coral" class="btn-toggle"><span>L3</span></label>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" id="teleop_l2_coral" name="teleop_l2_coral">
+                <label for="teleop_l2_coral" class="btn-toggle"><span>L2</span></label>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" id="teleop_l1_coral" name="teleop_l1_coral">
+                <label for="teleop_l1_coral" class="btn-toggle"><span>L1</span></label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="manual_algae">手動 ALGAE 擺放位置</label>
+            <div class="toggle-item">
+                <input type="checkbox" id="teleop_net_algae" name="teleop_net_algae">
+                <label for="teleop_net_algae" class="btn-toggle"><span>NET</span></label>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" id="teleop_processor_algae" name="teleop_processor_algae">
+                <label for="teleop_processor_algae" class="btn-toggle"><span>PROCESSOR</span></label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="endgame_status">ENDGAME</label>
+            <select id="endgame_status" name="endgame_status" class="select" required>
+                <option value="" disabled selected>ENDGAME STATUS</option>
+                <option value="NONE">NONE</option>
+                <option value="PARK">PARK</option>
+                <option value="DEEP CAGE">DEEP CAGE</option>
+                <option value="SHALLOW CAGE">SHALLOW CAGE</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="description">備註</label>
+            <textarea id="description" name="description" class="textarea" placeholder="輸入備註"></textarea>
+        </div>
+
+        <div id="team_submit_status" class="submit-status" aria-live="polite"></div>
+        <button id="add_team_btn" class="btn" type="submit">新增隊伍</button>
+    </form>
+</div>
