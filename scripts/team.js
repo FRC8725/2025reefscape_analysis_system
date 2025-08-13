@@ -1,11 +1,19 @@
-﻿export default class TeamPage {
+﻿import { readCache, writeCache, isFresh } from "../utils/cacheHelper.js";
+import { setStatus, fillSelect } from "../utils/uiTools.js";
+export default class TeamPage {
     constructor({ container, endpoint }) {
         this.container = container;
         this.endpoint = endpoint;
 
+        this.refreshMembersBtn = null;
+        this.memberSelect = null;
+
         this.teamDataForm = null;
         this.submitBtn = null;
         this.statusEl = null;
+
+        this.MEMBER_CACHE_KEY = 'members_cache';
+        this.TTL = 10 * 60 * 1000;
     }
 
     async init() {
@@ -13,8 +21,16 @@
         this.submitBtn = this.teamDataForm?.querySelector('button[type="submit"]');
         this.statusEl = this.container.querySelector('#team_submit_status');
 
+        this.refreshMembersBtn = this.container.querySelector('#refresh_members_btn');
+        this.memberSelect = this.container.querySelector('#recorder');
+
         if (!this.teamDataForm) return;
 
+        const memberCache = readCache(this.MEMBER_CACHE_KEY);
+        if (isFresh(memberCache, this.TTL)) fillSelect(this.memberSelect, memberCache.data);
+        else await this.fetchAndUpdateMembers();
+
+        this.refreshMembersBtn?.addEventListener('click', () => this.fetchAndUpdateMembers());
         this.teamDataForm.addEventListener('submit', (e) => this.onSubmit(e));
     }
 
@@ -39,6 +55,39 @@
         });
 
         fd.append(outKey, picked.join(sep));
+    }
+
+    async fetchAndUpdateMembers(showBusy = true) {
+        const original = this.refreshMembersBtn?.textContent;
+        if (showBusy && this.refreshMembersBtn) {
+            this.refreshMembersBtn.disabled = true;
+            this.refreshMembersBtn.textContent = '正在獲取隊員資料…';
+            this.refreshMembersBtn.setAttribute('aria-busy', 'true');
+        }
+        try {
+            const res = await fetch(`${this.endpoint}?action=list_members`);
+            const data = await res.json();
+            if (!res.ok || !data.ok) throw new Error(data.error || '無法取得隊員清單');
+            
+            writeCache(data.members, this.MEMBER_CACHE_KEY);
+            fillSelect(this.memberSelect, data.members);
+
+        } catch (err) {
+            console.error(err);
+            if (!this.memberSelect.options.length) {
+                this.memberSelect.innerHTML = '<option value="" disabled selected>選擇隊員</option>';
+            }
+            if (showBusy && this.refreshMembersBtn) {
+                this.refreshMembersBtn.textContent = '刷新失敗';
+                setTimeout(() => this.refreshMembersBtn.textContent = original || '刷新隊員名單', 1200);
+            }
+        } finally {
+            if (showBusy && this.refreshMembersBtn) {
+                this.refreshMembersBtn.disabled = false;
+                this.refreshMembersBtn.removeAttribute('aria-busy');
+                this.refreshMembersBtn.textContent = original || '刷新隊員名單';
+            }
+        }
     }
 
     async onSubmit(event) {
