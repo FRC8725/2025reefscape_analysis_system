@@ -124,7 +124,10 @@ export default class TeamPage {
         teamReasultDF.set('endgame_avg', 'fx:=IFERROR(SUMIF(\'match_data\'!B:B, {team_number_cell}, \'match_data\'!U:U) / {qualified_rounds_cell}, 0)');
         teamReasultDF.set('auto_avg', 'fx:=IFERROR(SUMIF(\'match_data\'!B:B, {team_number_cell}, \'match_data\'!V:V) / {qualified_rounds_cell}, 0)');
         teamReasultDF.set('teleop_avg', 'fx:=IFERROR(SUMIF(\'match_data\'!B:B, {team_number_cell}, \'match_data\'!W:W) / {qualified_rounds_cell}, 0)');
+        teamReasultDF.set('team_total_avg', 'fx:=IFERROR(SUMIF(\'match_data\'!B:B, {team_number_cell}, \'match_data\'!Z:Z) / {qualified_rounds_cell}, 0)');
         teamReasultDF.set('qualification_total_avg', 'fx:=IFERROR(SUMIF(\'match_data\'!B:B, {team_number_cell}, \'match_data\'!Y:Y) / {qualified_rounds_cell}, 0) ');
+        teamReasultDF.set('alliance_against_avg', 'fx:=IFERROR(SUMIF(\'match_data\'!B:B, {team_number_cell}, \'match_data\'!AA:AA) / {qualified_rounds_cell}, 0)');
+        teamReasultDF.set('pythagorean_wins_3', 'fx:=IFERROR(({team_total_avg_cell}^3)/({team_total_avg_cell}^3+({alliance_against_avg_cell}/3)^3), 0)');
 
         teamReasultDF.set('sheet_name', 'team_match_reasult');
         teamReasultDF.set('timestamp', nowISO);
@@ -147,7 +150,6 @@ export default class TeamPage {
             const res = await fetch(this.endpoint, { method: 'POST', body: outputDF });
             const text = await res.text();
             let data = {}; try { data = JSON.parse(text); } catch { }
-            console.log(data);
 
             if (res.ok && data.ok) {
                 this.setStatus('已新增隊伍 ✅', 'success');
