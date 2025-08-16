@@ -5,10 +5,19 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 	<title>FRC 8725 Scouting Table</title>
+	<link rel="icon" href="./assets/icon.ico">
 	<link rel="stylesheet" href="style.css" />
+
+	<!-- 放在你的 index.html head 或登入頁 -->
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
+	<div id="login-panel">
+		<div id="g_id_signin"></div>
+		<p id="login-status"></p>
+	</div>
+
 	<header class="app-header">
 		<h1>FRC 8725 Scouting Table</h1>
 	</header>
@@ -33,16 +42,50 @@
 	</footer>
 
 	<script type="module">
- 		import MainApp from './main.js';
- 		const scriptId = 'AKfycbzEKCVr0NrxBKJXNesRYaBBfsOfb6dYHOKKpnxYIZRwlBIzNOk_QaOj8yAS276hJfEM';
- 		const ENDPOINT = `https://script.google.com/macros/s/${scriptId}/exec`;
+		import MainApp from './main.js';
+		const scriptId = 'AKfycbz_ZaiQNG8Hj1HehTVK-Gh9Do0hh5UCnNYWOt4ZqChLAhr7JWTW4KqEoBw-UhONdh_a';
+		const ENDPOINT = `https://script.google.com/macros/s/${scriptId}/exec`;
 
- 		const app = new MainApp({
- 			endpoint: ENDPOINT,
- 			contentBoxId: 'tab-content'
- 		});
+		const CLIENT_ID = '558947291424-o4qsa2pc5nmmllr9rhpei766oe4bqneo.apps.googleusercontent.com';
 
- 		app.start();
+		// 顯示登入按鈕
+		window.onload = () => {
+			google.accounts.id.initialize({
+				client_id: CLIENT_ID,
+				callback: handleCredentialResponse,
+			});
+			google.accounts.id.renderButton(
+				document.getElementById("g_id_signin"),
+				{ theme: "outline", size: "large" }
+			);
+		};
+
+		async function handleCredentialResponse(resp) {
+			document.getElementById('login-status').textContent = `正在取得授權...`;
+
+			const id_token = resp.credential;
+			const res = await fetch(`${ENDPOINT}?action=auth_check`, {
+				method: 'POST',
+				body: new URLSearchParams({ id_token })
+			});
+
+			const data = await res.json();
+			if (data.ok) {
+				localStorage.setItem('id_token', id_token);
+				document.getElementById('login-status').textContent = `歡迎，${data.email}`;
+				const app = new MainApp({
+					endpoint: ENDPOINT,
+					contentBoxId: 'tab-content'
+				});
+
+				app.start();
+				document.getElementById('login-panel').style.display = 'none';
+
+			} else {
+				document.getElementById('login-status').textContent = `未授權：${data.error || ''}`;
+			}
+		}
 	</script>
 </body>
+
 </html>

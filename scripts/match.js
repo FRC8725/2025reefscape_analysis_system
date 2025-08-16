@@ -58,10 +58,12 @@ export default class MatchPage {
             this.refreshMembersBtn.setAttribute('aria-busy', 'true');
         }
         try {
-            const res = await fetch(`${this.endpoint}?action=list_members`);
+            const idt = localStorage.getItem('id_token') || '';
+
+            const res = await fetch(`${this.endpoint}?action=list_members&id_token=${encodeURIComponent(idt)}`);
             const data = await res.json();
             if (!res.ok || !data.ok) throw new Error(data.error || '無法取得隊員清單');
-
+            
             writeCache(data.members, this.MEMBER_CACHE_KEY);
             fillSelect(this.memberSelect, data.members);
 
@@ -91,7 +93,9 @@ export default class MatchPage {
             this.refreshTeamBtn.setAttribute('aria-busy', 'true');
         }
         try {
-            const res = await fetch(`${this.endpoint}?action=list_teams`);
+            const idt = localStorage.getItem('id_token') || '';
+
+            const res = await fetch(`${this.endpoint}?action=list_teams&id_token=${encodeURIComponent(idt)}`);
             const data = await res.json();
             if (!res.ok || !data.ok) throw new Error(data.error || '無法取得隊伍清單');
 
@@ -206,7 +210,9 @@ export default class MatchPage {
             outputDF.set('ops', JSON.stringify([
                 { sheet: 'match_data', data: Object.fromEntries(fd) }
             ]));
-            
+
+            outputDF.set('id_token', localStorage.getItem('id_token') || '');
+
             const res = await fetch(this.endpoint, { method: 'POST', body: outputDF });
             const text = await res.text();
             let data = {}; try { data = JSON.parse(text); } catch { }

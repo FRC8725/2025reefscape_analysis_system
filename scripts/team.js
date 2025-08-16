@@ -65,10 +65,12 @@ export default class TeamPage {
             this.refreshMembersBtn.setAttribute('aria-busy', 'true');
         }
         try {
-            const res = await fetch(`${this.endpoint}?action=list_members`);
+            const idt = localStorage.getItem('id_token') || '';
+
+            const res = await fetch(`${this.endpoint}?action=list_members&id_token=${encodeURIComponent(idt)}`);
             const data = await res.json();
             if (!res.ok || !data.ok) throw new Error(data.error || '無法取得隊員清單');
-            
+
             writeCache(data.members, this.MEMBER_CACHE_KEY);
             fillSelect(this.memberSelect, data.members);
 
@@ -132,12 +134,6 @@ export default class TeamPage {
         teamReasultDF.set('sheet_name', 'team_match_reasult');
         teamReasultDF.set('timestamp', nowISO);
 
-        outputDF.set('action', 'batch_append');
-        outputDF.set('ops', JSON.stringify([
-            { sheet: 'team_data', data: Object.fromEntries(teamDF) },
-            { sheet: 'team_match_reasult', data: Object.fromEntries(teamReasultDF) }
-        ]));
-
         try {
             if (this.submitBtn) {
                 this.submitBtn.disabled = true;
@@ -146,6 +142,14 @@ export default class TeamPage {
                 this.submitBtn.setAttribute('aria-busy', 'true');
             }
             this.setStatus('送出中…', 'pending');
+
+            outputDF.set('action', 'batch_append');
+            outputDF.set('ops', JSON.stringify([
+                { sheet: 'team_data', data: Object.fromEntries(teamDF) },
+                { sheet: 'team_match_reasult', data: Object.fromEntries(teamReasultDF) }
+            ]));
+
+            outputDF.set('id_token', localStorage.getItem('id_token') || '');
 
             const res = await fetch(this.endpoint, { method: 'POST', body: outputDF });
             const text = await res.text();
