@@ -8,34 +8,41 @@
 	<link rel="icon" href="./assets/icon.ico">
 	<link rel="stylesheet" href="style.css" />
 
-	<!-- 放在你的 index.html head 或登入頁 -->
 	<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
-	<div id="login-panel">
-		<div id="g_id_signin"></div>
-		<p id="login-status"></p>
+	<div id="login-overlay" class="login-overlay">
+		<div class="login-card">
+			<h2 class="login-title">登入 FRC 8725 Scouting</h2>
+			<p class="login-subtitle">請使用 Google 帳號登入；僅白名單使用者可進入。</p>
+
+			<div id="g_id_signin" class="login-button"></div>
+
+			<div id="login-status" class="status is-muted">尚未登入</div>
+		</div>
 	</div>
 
 	<header class="app-header">
 		<h1>FRC 8725 Scouting Table</h1>
 	</header>
 
+	<div id="app" class="hidden">
+		<section class="tabs">
+			<input type="radio" id="tab-team" name="tabs" checked>
+			<label for="tab-team" data-src="team.html" data-script="team.js">新增隊伍</label>
+
+			<input type="radio" id="tab-match" name="tabs">
+			<label for="tab-match" data-src="match.html" data-script="match.js">賽事記錄</label>
+
+			<input type="radio" id="tab-analysis" name="tabs">
+			<label for="tab-analysis" data-src="analysis.html" data-script="analysis.js">分析表</label>
+
+			<div id="tab-content"></div>
+		</section>
+	</div>
 	<!-- CSS-only Tabs -->
-	<section class="tabs">
-		<input type="radio" id="tab-team" name="tabs" checked>
-		<label for="tab-team" data-src="team.html" data-script="team.js">新增隊伍</label>
 
-		<input type="radio" id="tab-match" name="tabs">
-		<label for="tab-match" data-src="match.html" data-script="match.js">賽事記錄</label>
-
-		<input type="radio" id="tab-analysis" name="tabs">
-		<label for="tab-analysis" data-src="analysis.html" data-script="analysis.js">分析表</label>
-
-		<div id="tab-content"></div>
-
-	</section>
 
 	<footer class="app-footer">
 		<small>© 2025 8725 Misty Panther</small>
@@ -43,17 +50,28 @@
 
 	<script type="module">
 		import MainApp from './main.js';
-		const scriptId = 'AKfycbz_ZaiQNG8Hj1HehTVK-Gh9Do0hh5UCnNYWOt4ZqChLAhr7JWTW4KqEoBw-UhONdh_a';
+
+		const scriptId = 'AKfycbxJDvzAOOMujxXy9CfsgoV4mzcHilZcv_jXhe3EX4yKTbkjacQn1AKI_R66a2OzidnT';
 		const ENDPOINT = `https://script.google.com/macros/s/${scriptId}/exec`;
 
 		const CLIENT_ID = '558947291424-o4qsa2pc5nmmllr9rhpei766oe4bqneo.apps.googleusercontent.com';
 
-		// 顯示登入按鈕
+		const overlay = document.getElementById('login-overlay');
+    	const appRoot = document.getElementById('app');
+
+		// const app = new MainApp({
+		// 	endpoint: ENDPOINT,
+		// 	contentBoxId: 'tab-content'
+		// });
+
+		// app.start();
+
 		window.onload = () => {
 			google.accounts.id.initialize({
 				client_id: CLIENT_ID,
 				callback: handleCredentialResponse,
 			});
+
 			google.accounts.id.renderButton(
 				document.getElementById("g_id_signin"),
 				{ theme: "outline", size: "large" }
@@ -70,9 +88,15 @@
 			});
 
 			const data = await res.json();
+
 			if (data.ok) {
 				localStorage.setItem('id_token', id_token);
-				document.getElementById('login-status').textContent = `歡迎，${data.email}`;
+				localStorage.setItem('userdata_cache', JSON.stringify(data.info));
+
+				document.getElementById('login-status').textContent = `歡迎，${data.info.email}`;
+				overlay.classList.add('hidden');
+				appRoot.classList.remove('hidden');
+
 				const app = new MainApp({
 					endpoint: ENDPOINT,
 					contentBoxId: 'tab-content'
@@ -82,7 +106,7 @@
 				document.getElementById('login-panel').style.display = 'none';
 
 			} else {
-				document.getElementById('login-status').textContent = `未授權：${data.error || ''}`;
+				document.getElementById('login-status').textContent = `未授權：${data.info.error || ''}`;
 			}
 		}
 	</script>

@@ -8,15 +8,14 @@ export default class MatchPage {
         this.refreshTeamBtn = null;
         this.teamSelect = null;
 
-        this.refreshMembersBtn = null;
-        this.memberSelect = null;
+        this.memberInput = null;
 
         this.scoreTable = null;
         this.matchDataForm = null;
         this.submitBtn = null;
         this.statusEl = null;
 
-        this.MEMBER_CACHE_KEY = 'members_cache';
+        this.USERDATA_CACHE_KEY = 'userdata_cache';
         this.TEAM_CACHE_KEY = 'teams_cache';
         this.TTL = 10 * 60 * 1000;
     }
@@ -27,8 +26,10 @@ export default class MatchPage {
         this.refreshTeamBtn = this.container.querySelector('#refresh_teams_btn');
         this.teamSelect = this.container.querySelector('#team');
 
-        this.refreshMembersBtn = this.container.querySelector('#refresh_members_btn');
-        this.memberSelect = this.container.querySelector('#recorder');
+        this.memberInput = this.container.querySelector('#recorder');
+        this.userdata = readCache(this.USERDATA_CACHE_KEY);
+        this.memberInput.value = this.userdata.name;
+        this.memberInput.disabled = true;
 
         this.matchDataForm = this.container.querySelector('#match_form');
         this.submitBtn = this.matchDataForm?.querySelector('button[type="submit"]');
@@ -36,53 +37,12 @@ export default class MatchPage {
 
         if (!this.matchDataForm) return;
 
-        const memberCache = readCache(this.MEMBER_CACHE_KEY);
-        const teamCache = readCache(this.TEAM_CACHE_KEY);
-
-        if (isFresh(memberCache, this.TTL)) fillSelect(this.memberSelect, memberCache.data);
-        else await this.fetchAndUpdateMembers();
-        
+        const teamCache = readCache(this.TEAM_CACHE_KEY);        
         if (isFresh(teamCache, this.TTL)) fillSelect(this.teamSelect, teamCache.data);
         else await this.fetchAndUpdateTeams();
 
         this.refreshTeamBtn?.addEventListener('click', () => this.fetchAndUpdateTeams());
-        this.refreshMembersBtn?.addEventListener('click', () => this.fetchAndUpdateMembers());
         this.matchDataForm?.addEventListener('submit', (e) => this.onSubmit(e));
-    }
-
-    async fetchAndUpdateMembers(showBusy = true) {
-        const original = this.refreshMembersBtn?.textContent;
-        if (showBusy && this.refreshMembersBtn) {
-            this.refreshMembersBtn.disabled = true;
-            this.refreshMembersBtn.textContent = '正在獲取隊員資料…';
-            this.refreshMembersBtn.setAttribute('aria-busy', 'true');
-        }
-        try {
-            const idt = localStorage.getItem('id_token') || '';
-
-            const res = await fetch(`${this.endpoint}?action=list_members&id_token=${encodeURIComponent(idt)}`);
-            const data = await res.json();
-            if (!res.ok || !data.ok) throw new Error(data.error || '無法取得隊員清單');
-            
-            writeCache(data.members, this.MEMBER_CACHE_KEY);
-            fillSelect(this.memberSelect, data.members);
-
-        } catch (err) {
-            console.error(err);
-            if (!this.memberSelect.options.length) {
-                this.memberSelect.innerHTML = '<option value="" disabled selected>選擇隊員</option>';
-            }
-            if (showBusy && this.refreshMembersBtn) {
-                this.refreshMembersBtn.textContent = '刷新失敗';
-                setTimeout(() => this.refreshMembersBtn.textContent = original || '刷新隊員名單', 1200);
-            }
-        } finally {
-            if (showBusy && this.refreshMembersBtn) {
-                this.refreshMembersBtn.disabled = false;
-                this.refreshMembersBtn.removeAttribute('aria-busy');
-                this.refreshMembersBtn.textContent = original || '刷新隊員名單';
-            }
-        }
     }
 
     async fetchAndUpdateTeams(showBusy = true) {
@@ -190,6 +150,7 @@ export default class MatchPage {
         fd.set('teleop_points', String(calc.teleopPoints));
         fd.set('team_score', String(calc.autoPoints + calc.teleopPoints));
         fd.set('opponent_alliance_score', 'fx:=IFERROR(MODE(FILTER({total_points}, {match_number}={match_number_cell}, {alliance}<>{alliance_cell})), INDEX(FILTER({total_points}, {match_number}={match_number_cell}, {alliance}<>{alliance_cell}), 1))');
+        fd.set('recorder', this.userdata.name);
 
         fd.set('sheet_name', 'match_data');
         fd.set('timestamp', new Date().toISOString());

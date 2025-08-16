@@ -5,15 +5,14 @@ export default class TeamPage {
         this.container = container;
         this.endpoint = endpoint;
 
-        this.refreshMembersBtn = null;
-        this.memberSelect = null;
+        this.memberInput = null;
 
         this.teamDataForm = null;
         this.submitBtn = null;
         this.statusEl = null;
+        this.userdata = null;
 
-        this.MEMBER_CACHE_KEY = 'members_cache';
-        this.TTL = 10 * 60 * 1000;
+        this.USERDATA_CACHE_KEY = 'userdata_cache';
     }
 
     async init() {
@@ -21,16 +20,13 @@ export default class TeamPage {
         this.submitBtn = this.teamDataForm?.querySelector('button[type="submit"]');
         this.statusEl = this.container.querySelector('#team_submit_status');
 
-        this.refreshMembersBtn = this.container.querySelector('#refresh_members_btn');
-        this.memberSelect = this.container.querySelector('#recorder');
-
+        this.memberInput = this.container.querySelector('#recorder');
+        this.userdata = readCache(this.USERDATA_CACHE_KEY);
+        this.memberInput.value = this.userdata.name;
+        this.memberInput.disabled = true;
+        
         if (!this.teamDataForm) return;
 
-        const memberCache = readCache(this.MEMBER_CACHE_KEY);
-        if (isFresh(memberCache, this.TTL)) fillSelect(this.memberSelect, memberCache.data);
-        else await this.fetchAndUpdateMembers();
-
-        this.refreshMembersBtn?.addEventListener('click', () => this.fetchAndUpdateMembers());
         this.teamDataForm.addEventListener('submit', (e) => this.onSubmit(e));
     }
 
@@ -57,41 +53,6 @@ export default class TeamPage {
         fd.append(outKey, picked.join(sep));
     }
 
-    async fetchAndUpdateMembers(showBusy = true) {
-        const original = this.refreshMembersBtn?.textContent;
-        if (showBusy && this.refreshMembersBtn) {
-            this.refreshMembersBtn.disabled = true;
-            this.refreshMembersBtn.textContent = '正在獲取隊員資料…';
-            this.refreshMembersBtn.setAttribute('aria-busy', 'true');
-        }
-        try {
-            const idt = localStorage.getItem('id_token') || '';
-
-            const res = await fetch(`${this.endpoint}?action=list_members&id_token=${encodeURIComponent(idt)}`);
-            const data = await res.json();
-            if (!res.ok || !data.ok) throw new Error(data.error || '無法取得隊員清單');
-
-            writeCache(data.members, this.MEMBER_CACHE_KEY);
-            fillSelect(this.memberSelect, data.members);
-
-        } catch (err) {
-            console.error(err);
-            if (!this.memberSelect.options.length) {
-                this.memberSelect.innerHTML = '<option value="" disabled selected>選擇隊員</option>';
-            }
-            if (showBusy && this.refreshMembersBtn) {
-                this.refreshMembersBtn.textContent = '刷新失敗';
-                setTimeout(() => this.refreshMembersBtn.textContent = original || '刷新隊員名單', 1200);
-            }
-        } finally {
-            if (showBusy && this.refreshMembersBtn) {
-                this.refreshMembersBtn.disabled = false;
-                this.refreshMembersBtn.removeAttribute('aria-busy');
-                this.refreshMembersBtn.textContent = original || '刷新隊員名單';
-            }
-        }
-    }
-
     async onSubmit(event) {
         event.preventDefault();
 
@@ -115,6 +76,7 @@ export default class TeamPage {
 
         teamDF.set('sheet_name', 'team_data');
         teamDF.set('timestamp', nowISO);
+        teamDF.set('recorder', this.userdata.name);
 
         teamReasultDF.set('team_number', teamDF.get('team_number'));
 

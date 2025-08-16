@@ -130,6 +130,47 @@ h1{ margin:0; font-weight:700; font-size:clamp(18px,3vw,22px); letter-spacing:.3
 .placeholder{ text-align:center; color:var(--muted); padding:14px; }
 .empty-block{ padding:28px; color:var(--muted); text-align:center; }
 
+/* === Login Overlay (match your tokens) === */
+.login-overlay{
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px; z-index: 1000;
+}
+.login-card{
+  width: 100%; max-width: 420px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+.login-title{ margin: 0 0 6px 0; font-weight: 700; font-size: 18px; }
+.login-subtitle{ margin: 0 0 14px 0; font-size: 13px; color: var(--muted); }
+
+.login-actions{ display:flex; flex-direction:column; align-items:center; gap:12px; }
+.login-button{ display:inline-flex; justify-content:center; }
+#login-status{ margin-top: 10px;}
+
+.auth-status{
+  font-size: 13px; line-height: 1;
+  display: inline-block; padding: 8px 12px; border-radius: 999px;
+  border: 1px solid var(--border); background: #0e141c; color: var(--muted);
+}
+.auth-status.pending{ color:#60a5fa; }
+.auth-status.success{ color:var(--accent-2); }
+.auth-status.error{ color:var(--danger); }
+
+/* generic helper (already used elsewhere) */
+.hidden{ display:none !important; }
+
+/* mobile fine-tune */
+@media (max-width:480px){
+  .login-card{ border-radius: 6px; padding: 16px; }
+  .login-title{ font-size: 17px; }
+}
+
+
 /* Buttons */
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
@@ -144,3 +185,5 @@ h1{ margin:0; font-weight:700; font-size:clamp(18px,3vw,22px); letter-spacing:.3
   .form{ padding:16px; gap:14px; }
   .input-group{ grid-column: 1 / -1; } /* keep one per row by design */
 }
+
+

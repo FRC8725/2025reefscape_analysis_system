@@ -3,8 +3,7 @@
         const raw = localStorage.getItem(cacheKey);
         if (!raw) return null;
 
-        const obj = JSON.parse(raw);
-        return (obj && Array.isArray(obj.data)) ? obj : null;
+        return JSON.parse(raw);
 
     } catch (err) {
         console.error('Error reading cache:', err);
