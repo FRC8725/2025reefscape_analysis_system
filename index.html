@@ -14,8 +14,8 @@
 <body>
 	<div id="login-overlay" class="login-overlay">
 		<div class="login-card">
-			<h2 class="login-title">登入 FRC 8725 Scouting</h2>
-			<p class="login-subtitle">請使用 Google 帳號登入；僅白名單使用者可進入。</p>
+			<h2 class="login-title">登入 FRC 8725 Scouting System</h2>
+			<p class="login-subtitle">請使用 Google 帳號登入。</p>
 
 			<div id="g_id_signin" class="login-button"></div>
 
@@ -38,6 +38,8 @@
 			<input type="radio" id="tab-analysis" name="tabs">
 			<label for="tab-analysis" data-src="analysis.html" data-script="analysis.js">分析表</label>
 
+			<button id="logout-btn" type="button">登出</button>
+
 			<div id="tab-content"></div>
 		</section>
 	</div>
@@ -51,20 +53,18 @@
 	<script type="module">
 		import MainApp from './main.js';
 
-		const scriptId = 'AKfycbxJDvzAOOMujxXy9CfsgoV4mzcHilZcv_jXhe3EX4yKTbkjacQn1AKI_R66a2OzidnT';
+		const scriptId = 'AKfycbwPoJ5CbfsNilQkHmikJSi7JrmHV9gTZOvzP1VGMbTzp2q8PR5A6ybsoXrYp6leBxLI';
 		const ENDPOINT = `https://script.google.com/macros/s/${scriptId}/exec`;
 
 		const CLIENT_ID = '558947291424-o4qsa2pc5nmmllr9rhpei766oe4bqneo.apps.googleusercontent.com';
 
 		const overlay = document.getElementById('login-overlay');
-    	const appRoot = document.getElementById('app');
+		const appRoot = document.getElementById('app');
+		const logoutBtn = document.getElementById('logout-btn');
 
-		// const app = new MainApp({
-		// 	endpoint: ENDPOINT,
-		// 	contentBoxId: 'tab-content'
-		// });
-
-		// app.start();
+		if (localStorage.getItem('id_token')) {
+			await loadMainApp();
+		}
 
 		window.onload = () => {
 			google.accounts.id.initialize({
@@ -77,6 +77,19 @@
 				{ theme: "outline", size: "large" }
 			);
 		};
+
+
+		async function loadMainApp() {
+			overlay.classList.add('hidden');
+			appRoot.classList.remove('hidden');
+
+			const app = new MainApp({
+				endpoint: ENDPOINT,
+				contentBoxId: 'tab-content'
+			});
+
+			app.start();
+		}
 
 		async function handleCredentialResponse(resp) {
 			document.getElementById('login-status').textContent = `正在取得授權...`;
@@ -92,23 +105,28 @@
 			if (data.ok) {
 				localStorage.setItem('id_token', id_token);
 				localStorage.setItem('userdata_cache', JSON.stringify(data.info));
-
 				document.getElementById('login-status').textContent = `歡迎，${data.info.email}`;
-				overlay.classList.add('hidden');
-				appRoot.classList.remove('hidden');
 
-				const app = new MainApp({
-					endpoint: ENDPOINT,
-					contentBoxId: 'tab-content'
-				});
-
-				app.start();
-				document.getElementById('login-panel').style.display = 'none';
+				await loadMainApp();
 
 			} else {
 				document.getElementById('login-status').textContent = `未授權：${data.info.error || ''}`;
 			}
 		}
+
+		function logout() {
+			localStorage.removeItem('id_token');
+
+			if (window.google?.accounts?.id) {
+				try { google.accounts.id.disableAutoSelect(); } catch (e) { }
+			}
+
+			overlay?.classList.remove('hidden');
+			appRoot?.classList.add('hidden');
+		}
+
+		logoutBtn?.addEventListener('click', logout);
+
 	</script>
 </body>
 

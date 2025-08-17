@@ -77,6 +77,7 @@ export default class TeamPage {
         teamDF.set('sheet_name', 'team_data');
         teamDF.set('timestamp', nowISO);
         teamDF.set('recorder', this.userdata.name);
+        teamDF.set('recorder_email', this.userdata.email);
 
         teamReasultDF.set('team_number', teamDF.get('team_number'));
 

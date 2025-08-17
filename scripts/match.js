@@ -151,6 +151,7 @@ export default class MatchPage {
         fd.set('team_score', String(calc.autoPoints + calc.teleopPoints));
         fd.set('opponent_alliance_score', 'fx:=IFERROR(MODE(FILTER({total_points}, {match_number}={match_number_cell}, {alliance}<>{alliance_cell})), INDEX(FILTER({total_points}, {match_number}={match_number_cell}, {alliance}<>{alliance_cell}), 1))');
         fd.set('recorder', this.userdata.name);
+        fd.set('recorder_email', this.userdata.email);
 
         fd.set('sheet_name', 'match_data');
         fd.set('timestamp', new Date().toISOString());
