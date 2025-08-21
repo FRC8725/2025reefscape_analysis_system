@@ -52,8 +52,9 @@
 
 	<script type="module">
 		import MainApp from './main.js';
+		import { setCookie, getCookie, deleteCookie } from './utils/cookiesHelper.js';
 
-		const scriptId = 'AKfycbwPoJ5CbfsNilQkHmikJSi7JrmHV9gTZOvzP1VGMbTzp2q8PR5A6ybsoXrYp6leBxLI';
+		const scriptId = 'AKfycbyLnX-HRVcpdOfLuhcT3iZmiI2NoJ8bdVJdnerAA6DMRJBG7ARqnM-RNJ3SX3JZ8bc';
 		const ENDPOINT = `https://script.google.com/macros/s/${scriptId}/exec`;
 
 		const CLIENT_ID = '558947291424-o4qsa2pc5nmmllr9rhpei766oe4bqneo.apps.googleusercontent.com';
@@ -62,9 +63,19 @@
 		const appRoot = document.getElementById('app');
 		const logoutBtn = document.getElementById('logout-btn');
 
-		if (localStorage.getItem('id_token')) {
-			await loadMainApp();
-		}
+		const app = new MainApp({
+			endpoint: ENDPOINT,
+			contentBoxId: 'tab-content'
+		});
+
+		// if (localStorage.getItem('id_token')) {
+		// 	await loadMainApp();
+		// }
+
+		window.addEventListener('DOMContentLoaded', () => {
+			const token = getCookie("id_token");
+			if (token) loadMainApp();
+		});
 
 		window.onload = () => {
 			google.accounts.id.initialize({
@@ -78,21 +89,16 @@
 			);
 		};
 
-
 		async function loadMainApp() {
 			overlay.classList.add('hidden');
 			appRoot.classList.remove('hidden');
-
-			const app = new MainApp({
-				endpoint: ENDPOINT,
-				contentBoxId: 'tab-content'
-			});
 
 			app.start();
 		}
 
 		async function handleCredentialResponse(resp) {
-			document.getElementById('login-status').textContent = `正在取得授權...`;
+			const loginStatus = document.getElementById('login-status');
+			loginStatus.textContent = `正在取得授權...`;
 
 			const id_token = resp.credential;
 			const res = await fetch(`${ENDPOINT}?action=auth_check`, {
@@ -105,24 +111,22 @@
 			if (data.ok) {
 				localStorage.setItem('id_token', id_token);
 				localStorage.setItem('userdata_cache', JSON.stringify(data.info));
-				document.getElementById('login-status').textContent = `歡迎，${data.info.email}`;
+				setCookie("id_token", id_token, 1);
+
+				loginStatus.textContent = `歡迎，${data.info.email}`;
 
 				await loadMainApp();
 
 			} else {
-				document.getElementById('login-status').textContent = `未授權：${data.info.error || ''}`;
+				loginStatus.textContent = `未授權：${data.info.error || ''}`;
 			}
 		}
 
 		function logout() {
-			localStorage.removeItem('id_token');
-
-			if (window.google?.accounts?.id) {
-				try { google.accounts.id.disableAutoSelect(); } catch (e) { }
-			}
-
-			overlay?.classList.remove('hidden');
-			appRoot?.classList.add('hidden');
+			deleteCookie("id_token");
+			google.accounts.id.disableAutoSelect();
+			overlay.classList.remove('hidden');
+			appRoot.classList.add('hidden');
 		}
 
 		logoutBtn?.addEventListener('click', logout);
